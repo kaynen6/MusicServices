@@ -5,13 +5,18 @@
 
 import requests
 import json
+import keys
 from requests.auth import HTTPBasicAuth
 
 
 # In[2]:
+username = keys.username
+password = keys.password
+api_key = keys.api_key
+api_secret = keys.api_secret
 
-payload = {"username": "{yourAccountEmail}","password": "{yourPassword}", "grant_type":"password"}
-r = requests.post("https://api.napster.com/oauth/token", auth=HTTPBasicAuth("{api key}", "{accessToken}"), data = payload)
+payload = {"username": username,"password": password, "grant_type":"password"}
+r = requests.post("https://api.napster.com/oauth/token", auth=HTTPBasicAuth(api_key, api_secret), data = payload)
 
 
 # In[3]:
