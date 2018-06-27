@@ -10,10 +10,12 @@ from requests.auth import HTTPBasicAuth
 
 
 # In[2]:
+## init user config from keys.py
 username = keys.username
 password = keys.password
 api_key = keys.api_key
 api_secret = keys.api_secret
+path = keys.path
 
 payload = {"username": username,"password": password, "grant_type":"password"}
 r = requests.post("https://api.napster.com/oauth/token", auth=HTTPBasicAuth(api_key, api_secret), data = payload)
@@ -84,7 +86,7 @@ r.json()
 
 # In[14]:
 
-with open('C:\\users\\user\\desktop\\artists.txt', 'w+') as f:
+with open(keys.path, 'w+') as f:
     for artist in r.json().get("artists"):
         #print artist.get("name")
         json.dump(artist.get("name"),f)
@@ -97,7 +99,7 @@ r = requests.get("https://api.napster.com/v2.2/me/library/artists?limit=200&offs
 
 # In[16]:
 
-with open('C:\\users\\user\\desktop\\artists.txt', 'a+') as f:
+with open(keys.path, 'a+') as f:
     for artist in r.json().get("artists"):
         #print artist.get("name")
         json.dump(artist.get("name"),f)
