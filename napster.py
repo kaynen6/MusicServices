@@ -11,10 +11,10 @@ from requests.auth import HTTPBasicAuth
 
 # In[2]:
 ## init user config from keys.py
-username = keys.username
-password = keys.password
-api_key = keys.api_key
-api_secret = keys.api_secret
+username = keys.nap_username
+password = keys.nap_password
+api_key = keys.nap_api_key
+api_secret = keys.nap_api_secret
 path = keys.path
 
 payload = {"username": username,"password": password, "grant_type":"password"}
@@ -89,7 +89,9 @@ r.json()
 with open(keys.path, 'w+') as f:
     for artist in r.json().get("artists"):
         #print artist.get("name")
+        artist["name"].strip('"')
         json.dump(artist.get("name"),f)
+        f.write("\n")
 
 
 # In[15]:
@@ -102,7 +104,9 @@ r = requests.get("https://api.napster.com/v2.2/me/library/artists?limit=200&offs
 with open(keys.path, 'a+') as f:
     for artist in r.json().get("artists"):
         #print artist.get("name")
+        artist["name"].strip('"')
         json.dump(artist.get("name"),f)
+        f.write("\n")
 
 
 # In[ ]:
