@@ -21,13 +21,20 @@ if r.status_code == 200:
         for line in f:
             artists.append(f.readline())
     ## search artist
+    ids = []
     for artist in artists:
-        artist = artist.replace(" ","%20")
+        artist = artist.replace(" ","+")
         artist = artist.strip("\n")
         artist = artist.strip('"')
-        print(artist)
         url = "https://api.spotify.com/v1/search"
         headers = {'Authorization': 'Bearer '+token}
-        pararms =  {'q': artist, 'type': 'artist', 'market':'from_token'}
+        params =  {'q': artist, 'type': 'artist', 'limit': 1}
         r = requests.request("GET", url, headers= headers, params= params)
-        print(r.json())
+        response = r.json()
+        # print(response['artists']['items'][0]['id'])
+        try:
+            ids.append(response['artists']['items'][0]['id'])
+        except:
+            print("Error adding ID from artist: {0}".format(artist))
+        #print(ids)
+    
