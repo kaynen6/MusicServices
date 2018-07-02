@@ -5,6 +5,7 @@ client_secret = keys.spot_secret
 
 
 #get token from spotify
+print("Getting Access to Spotify Account.")
 headers = {'Content-Type': "application/x-www-form-urlencoded"}
 params = {"grant_type":"client_credentials"}
 url = "https://accounts.spotify.com/api/token"
@@ -13,15 +14,16 @@ r = requests.request("POST", url, auth=(client_id, client_secret),headers=header
 
 
 if r.status_code == 200:
-    print(r.json())
     response = r.json()
     token = response.get("access_token")
     artists = []
+    print("Accessing napster artist file.")
     with open(keys.path, "r") as f:
         for line in f:
             artists.append(f.readline())
     ## search artist
-    ids = []
+    artistDict = {}
+    print("Fetching Spotify IDs for each artist in Napster Library.")
     for artist in artists:
         artist = artist.replace(" ","+")
         artist = artist.strip("\n")
@@ -32,9 +34,22 @@ if r.status_code == 200:
         r = requests.request("GET", url, headers= headers, params= params)
         response = r.json()
         # print(response['artists']['items'][0]['id'])
-        try:
-            ids.append(response['artists']['items'][0]['id'])
-        except:
-            print("Error adding ID from artist: {0}".format(artist))
-        #print(ids)
+        if response:
+            try:
+                artistDict[response['artists']['items'][0]['name']]= {'id': response['artists']['items'][0]['id']}
+            except:
+                print("Error adding ID from artist: {0}".format(artist))
+            #print(ids)
+    # get albums for each artist
+    print("Fetching Albums for each artist.")
+    for artist in artistDict:
+        artistDict[artist]["albums"] = []
+        url = "https://api.spotify.com/v1/artists/{0}/albums".format(artistDict[artist]['id'])
+        headers = {'Authorization': 'Bearer '+token}
+        params = {'include_groups': 'album', 'market': 'US'}
+        r = requests.request("GET", url, headers= headers, params= params)
+        response = r.json()
+        for album in response['items']:
+            artistDict[artist]["albums"].append(album['id'])
+    print(artistDict)
     
