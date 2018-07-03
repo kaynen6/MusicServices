@@ -16,6 +16,7 @@ r = requests.request("POST", url, auth=(client_id, client_secret),headers=header
 if r.status_code == 200:
     response = r.json()
     token = response.get("access_token")
+    print(token)
     artists = []
     print("Accessing napster artist file.")
     with open(keys.path, "r") as f:
@@ -50,6 +51,15 @@ if r.status_code == 200:
         r = requests.request("GET", url, headers= headers, params= params)
         response = r.json()
         for album in response['items']:
-            artistDict[artist]["albums"].append(album['id'])
-    print(artistDict)
-    
+             artistDict[artist]["albums"].append(album['id'])
+        ## add albums to user library
+        url = "https://api.spotify.com/v1/me/albums?"
+        params = {'ids': []}
+        headers['Content-Type'] = 'application/json'
+        for i in range(0,len(artistDict[artist]["albums"])):
+            params['ids'].append(artistDict[artist]["albums"][i]+',')
+        r = requests.request('PUT', url, headers = headers, params = params)
+        if r.status_code == 201:
+            print("Successfully added albums to library from {0}.".format(artist))
+        else: print("Adding Albums Failure")
+
